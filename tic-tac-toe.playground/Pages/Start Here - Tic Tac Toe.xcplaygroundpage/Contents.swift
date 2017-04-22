@@ -23,21 +23,21 @@
     I have given you a broken test, try to make it pass.
  
  */
-
 import XCTest
 
 // implement me!
-func format(grid: [String]) -> String {
+func display(grid: [String]) -> String {
     
     return grid.debugDescription
 }
 
 let rawGrid = ["X", "X", "O", "X", "O", "O", "O", " ", " "]
 let expected = " X | X | O\n X | O | O\n O |   |  \n"
-let formattedGrid = format(grid: rawGrid )
+let formattedGrid = display(grid: rawGrid )
 
-print(expected)
 print(formattedGrid)
+print(expected)
+
 
 XCTAssertEqual(expected,
                formattedGrid,
