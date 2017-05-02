@@ -76,7 +76,7 @@ struct Cell {
  - Experiment:
  Your challenge is to populate the `moves` Array with optional closures representing the possible acceptable moves based on the current state of the game.
  */
-let positions: Array<(Row, Column)> = [(row: .top, col: .left), (row: .top, col: .middle), (row: .top, col: .right),
+let positions: [(Row, Column)] = [(row: .top, col: .left), (row: .top, col: .middle), (row: .top, col: .right),
                                        (row: .middle, col: .left), (row: .middle, col: .middle), (row: .middle, col: .right),
                                        (row: .bottom, col: .left), (row: .bottom, col: .middle), (row: .bottom, col: .right)]
 
