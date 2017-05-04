@@ -57,16 +57,29 @@ enum Column: Int {
     case left, middle, right
 }
 
+struct Position {
+    let row: Row
+    let col: Column
+}
+
+extension Position: Hashable {
+    var hashValue: Int {
+        return row.hashValue ^ col.hashValue
+    }
+    static func == (lhs: Position, rhs: Position) -> Bool {
+        return lhs.row == rhs.row && lhs.col == rhs.col
+    }
+}
+
 // a type-safe cell! there is no way to make a cell that sits outside the grid or has an invalid symbol
 struct Cell {
     let symbol: Symbol
-    let row: Row
-    let column: Column
+    let position: Position
 }
 
 /*:
  - Note:
- We have just encoded a bunch of the rules of tic tac toe simply by writing some `enum`s and a struct. This is way better than writing code to check things because the *compiler* keeps us from breaking the rules.
+ We have just encoded a bunch of the rules of tic tac toe simply by writing some enums and structs. This is way better than writing code to check things because the *compiler* keeps us from breaking the rules.
  
  
  - Important:
@@ -76,18 +89,18 @@ struct Cell {
  - Experiment:
  Your challenge is to populate the `moves` Array with optional closures representing the possible acceptable moves based on the current state of the game.
  */
-let positions: [(Row, Column)] = [(row: .top, col: .left), (row: .top, col: .middle), (row: .top, col: .right),
-                                       (row: .middle, col: .left), (row: .middle, col: .middle), (row: .middle, col: .right),
-                                       (row: .bottom, col: .left), (row: .bottom, col: .middle), (row: .bottom, col: .right)]
+let positions: [Position] = [Position(row: .top, col: .left), Position(row: .top, col: .middle), Position(row: .top, col: .right),
+                             Position(row: .middle, col: .left), Position(row: .middle, col: .middle), Position(row: .middle, col: .right),
+                                       Position(row: .bottom, col: .left), Position(row: .bottom, col: .middle), Position(row: .bottom, col: .right)]
 
 struct Game: CustomStringConvertible {
     typealias Move = ()->Game
     let grid: [Cell]
-    let moves: [Move?] // you might want to upgrade this
+    let moves: [Position:Move]
     var description: String { return "\(grid)"} // and this
     
     init(starting: Playable){
-        grid = positions.map{ Cell(symbol: .empty, row: $0.0, column: $0.1) }
+        grid = positions.map{ Cell(symbol: .empty, position: $0) }
         moves = grid.enumerated().map{ (index, _) in
             return { Game(starting: starting) }
         }
@@ -98,20 +111,20 @@ let initial = Game(starting: .o)
 
 XCTAssertEqual(9, initial.moves.count, "should have nine possible moves")
 
-let first: Game = initial.moves[0]!()
+let first: Game = initial.moves[Position(row: .top, col: .left)]!()
 
 //XCTAssertNil(first.moves[0], "we played 0 already so it should be nil")
 
-let second = first.moves[8]!()
-let availableMoves = second.moves.filter({ $0 != nil }).count
+let second = first.moves[Position(row: .bottom, col: .right)]!()
+let availableMoves = second.moves.count
 
 //XCTAssertEqual(7, availableMoves, "there should only be 7 moves left")
 //XCTAssert(.played(Playable.x) == second.grid[8].symbol, "second move is by x")
 
-let third = second.moves[1]!()
-let fourth = third.moves[7]!()
-let fifth = fourth.moves[2]!()
-let noMore = fifth.moves.filter({ $0 != nil }).count
+let third = second.moves[Position(row: .top, col: .middle)]!()
+let fourth = third.moves[Position(row: .bottom, col: .middle)]!()
+let fifth = fourth.moves[Position(row: .top, col: .right)]!()
+let noMore = fifth.moves.count
 
 //XCTAssertEqual(0, noMore, "this game is over")
 
