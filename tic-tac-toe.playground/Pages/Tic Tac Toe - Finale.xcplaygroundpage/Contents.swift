@@ -101,9 +101,11 @@ struct Game: CustomStringConvertible {
     
     init(starting: Playable){
         grid = positions.map{ Cell(symbol: .empty, position: $0) }
-        moves = grid.enumerated().map{ (index, _) in
-            return { Game(starting: starting) }
+        var tempMoves: [Position:Move] = [:]
+        for position in positions {
+            tempMoves[position] = { return Game(starting: starting) }
         }
+        moves = tempMoves
     }
 }
 
